@@ -53,6 +53,14 @@ export interface AddRemoveContextCategoryInput {
   type: ContextCategories;
 }
 
+export enum AiJobStatus {
+  claim = 'claim',
+  failed = 'failed',
+  finished = 'finished',
+  pending = 'pending',
+  running = 'running',
+}
+
 export interface AlreadyInSpaceDataType {
   __typename?: 'AlreadyInSpaceDataType';
   spaceId: Scalars['String']['output'];
@@ -979,7 +987,7 @@ export interface Mutation {
   cancelSubscription: SubscriptionType;
   changeEmail: UserType;
   changePassword: Scalars['Boolean']['output'];
-  claimTranscriptionJob: TranscriptionResultType;
+  claimTranscriptionResult: TranscriptionResultType;
   /** Cleanup sessions */
   cleanupCopilotSession: Array<Scalars['String']['output']>;
   /** Create change password url */
@@ -1134,7 +1142,7 @@ export interface MutationChangePasswordArgs {
   userId?: InputMaybe<Scalars['String']['input']>;
 }
 
-export interface MutationClaimTranscriptionJobArgs {
+export interface MutationClaimTranscriptionResultArgs {
   jobId: Scalars['String']['input'];
 }
 
@@ -1902,6 +1910,7 @@ export interface TranscriptionItemType {
 
 export interface TranscriptionResultType {
   __typename?: 'TranscriptionResultType';
+  status: Maybe<AiJobStatus>;
   summary: Maybe<Scalars['String']['output']>;
   transcription: Maybe<Array<TranscriptionItemType>>;
 }
@@ -2699,14 +2708,15 @@ export type SubmitTranscriptionJobMutation = {
   submitTranscriptionJob: string;
 };
 
-export type ClaimTranscriptionJobMutationVariables = Exact<{
+export type ClaimTranscriptionResultMutationVariables = Exact<{
   jobId: Scalars['String']['input'];
 }>;
 
-export type ClaimTranscriptionJobMutation = {
+export type ClaimTranscriptionResultMutation = {
   __typename?: 'Mutation';
-  claimTranscriptionJob: {
+  claimTranscriptionResult: {
     __typename?: 'TranscriptionResultType';
+    status: AiJobStatus | null;
     summary: string | null;
     transcription: Array<{
       __typename?: 'TranscriptionItemType';
@@ -4532,9 +4542,9 @@ export type Mutations =
       response: SubmitTranscriptionJobMutation;
     }
   | {
-      name: 'claimTranscriptionJobMutation';
-      variables: ClaimTranscriptionJobMutationVariables;
-      response: ClaimTranscriptionJobMutation;
+      name: 'claimTranscriptionResultMutation';
+      variables: ClaimTranscriptionResultMutationVariables;
+      response: ClaimTranscriptionResultMutation;
     }
   | {
       name: 'createCopilotMessageMutation';
