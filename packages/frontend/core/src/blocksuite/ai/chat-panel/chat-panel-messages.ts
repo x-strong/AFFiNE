@@ -1,3 +1,7 @@
+import './message/action';
+import './message/assistant';
+import './message/user';
+
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
@@ -19,6 +23,7 @@ import { AIProvider } from '../provider';
 import {
   type ChatContextValue,
   type ChatMessage,
+  isChatAction,
   isChatMessage,
 } from './chat-context';
 import { HISTORY_IMAGE_ACTIONS } from './const';
@@ -245,20 +250,28 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
               (_, index) => index,
               (item, index) => {
                 const isLast = index === filteredItems.length - 1;
-                return isChatMessage(item) && item.role === 'user'
-                  ? html`<chat-panel-user-message
-                      .item=${item}
-                    ></chat-panel-user-message>`
-                  : html`<chat-panel-assistant-message
-                      .host=${this.host}
-                      .item=${item}
-                      .isLast=${isLast}
-                      .status=${status}
-                      .error=${error}
-                      .previewSpecBuilder=${this.previewSpecBuilder}
-                      .getSessionId=${this.getSessionId}
-                      .retry=${() => this.retry()}
-                    ></chat-panel-assistant-message>`;
+                if (isChatMessage(item) && item.role === 'user') {
+                  return html`<chat-message-user
+                    .item=${item}
+                  ></chat-message-user>`;
+                } else if (isChatMessage(item) && item.role === 'assistant') {
+                  return html`<chat-message-assistant
+                    .host=${this.host}
+                    .item=${item}
+                    .isLast=${isLast}
+                    .status=${status}
+                    .error=${error}
+                    .previewSpecBuilder=${this.previewSpecBuilder}
+                    .getSessionId=${this.getSessionId}
+                    .retry=${() => this.retry()}
+                  ></chat-message-assistant>`;
+                } else if (isChatAction(item)) {
+                  return html`<chat-message-action
+                    .host=${this.host}
+                    .item=${item}
+                  ></chat-message-action>`;
+                }
+                return nothing;
               }
             )}
       </div>

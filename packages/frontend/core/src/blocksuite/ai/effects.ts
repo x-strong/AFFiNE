@@ -15,7 +15,6 @@ import { UserInfo } from './blocks/ai-chat-block/components/user-info';
 import { AIChatBlockSchemaExtension } from './blocks/ai-chat-block/model';
 import { ChatPanel } from './chat-panel';
 import { ActionWrapper } from './chat-panel/actions/action-wrapper';
-import { ChatText } from './chat-panel/actions/chat-text';
 import { ActionImage } from './chat-panel/actions/image';
 import { ActionImageToText } from './chat-panel/actions/image-to-text';
 import { ActionMakeReal } from './chat-panel/actions/make-real';
@@ -23,17 +22,22 @@ import { ActionMindmap } from './chat-panel/actions/mindmap';
 import { ActionSlides } from './chat-panel/actions/slides';
 import { ActionText } from './chat-panel/actions/text';
 import { AILoading } from './chat-panel/ai-loading';
-import { ChatPanelAssistantMessage } from './chat-panel/chat-panel-assistant-message';
 import { ChatPanelChips } from './chat-panel/chat-panel-chips';
 import { ChatPanelInput } from './chat-panel/chat-panel-input';
 import { ChatPanelMessages } from './chat-panel/chat-panel-messages';
-import { ChatPanelUserMessage } from './chat-panel/chat-panel-user-message';
 import { ChatPanelAddPopover } from './chat-panel/components/add-popover';
 import { ChatPanelChip } from './chat-panel/components/chip';
 import { ChatPanelCollectionChip } from './chat-panel/components/collection-chip';
 import { ChatPanelDocChip } from './chat-panel/components/doc-chip';
 import { ChatPanelFileChip } from './chat-panel/components/file-chip';
 import { ChatPanelTagChip } from './chat-panel/components/tag-chip';
+import { AssistantAvatar } from './chat-panel/content/assistant-avatar';
+import { ChatContentImages } from './chat-panel/content/images';
+import { ChatContentPureText } from './chat-panel/content/pure-text';
+import { ChatContentRichText } from './chat-panel/content/rich-text';
+import { ChatMessageAction } from './chat-panel/message/action';
+import { ChatMessageAssistant } from './chat-panel/message/assistant';
+import { ChatMessageUser } from './chat-panel/message/user';
 import { effects as componentAiItemEffects } from './components/ai-item';
 import { AIScrollableTextRenderer } from './components/ai-scrollable-text-renderer';
 import { AskAIButton } from './components/ask-ai-button';
@@ -83,7 +87,6 @@ export function registerAIEffects() {
   customElements.define('chat-copy-more', ChatCopyMore);
   customElements.define('image-preview-grid', ImagePreviewGrid);
   customElements.define('action-wrapper', ActionWrapper);
-  customElements.define('chat-text', ChatText);
   customElements.define('action-image-to-text', ActionImageToText);
   customElements.define('action-image', ActionImage);
   customElements.define('action-make-real', ActionMakeReal);
@@ -91,11 +94,6 @@ export function registerAIEffects() {
   customElements.define('action-slides', ActionSlides);
   customElements.define('action-text', ActionText);
   customElements.define('ai-loading', AILoading);
-  customElements.define(
-    'chat-panel-assistant-message',
-    ChatPanelAssistantMessage
-  );
-  customElements.define('chat-panel-user-message', ChatPanelUserMessage);
   customElements.define('chat-panel-input', ChatPanelInput);
   customElements.define('chat-panel-messages', ChatPanelMessages);
   customElements.define('chat-panel', ChatPanel);
@@ -136,6 +134,13 @@ export function registerAIEffects() {
   customElements.define('ai-panel-input', AIPanelInput);
   customElements.define('ai-panel-generating', AIPanelGenerating);
   customElements.define('ai-panel-error', AIPanelError);
+  customElements.define('chat-assistant-avatar', AssistantAvatar);
+  customElements.define('chat-content-images', ChatContentImages);
+  customElements.define('chat-content-pure-text', ChatContentPureText);
+  customElements.define('chat-content-rich-text', ChatContentRichText);
+  customElements.define('chat-message-action', ChatMessageAction);
+  customElements.define('chat-message-assistant', ChatMessageAssistant);
+  customElements.define('chat-message-user', ChatMessageUser);
 
   customElements.define(AFFINE_AI_PANEL_WIDGET, AffineAIPanelWidget);
   customElements.define(AFFINE_EDGELESS_COPILOT_WIDGET, EdgelessCopilotWidget);
