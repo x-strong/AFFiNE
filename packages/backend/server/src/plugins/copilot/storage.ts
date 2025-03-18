@@ -14,7 +14,6 @@ import {
   URLHelper,
 } from '../../base';
 import { QuotaService } from '../../core/quota';
-import { readBufferFromStream } from './utils';
 
 @Injectable()
 export class CopilotStorage {
