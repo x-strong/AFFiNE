@@ -1,8 +1,8 @@
+import type { BaseTextAttributes } from '@blocksuite/store';
 import { html } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import type { AttributeRenderer } from '../types.js';
-import type { BaseTextAttributes } from './base-attributes.js';
 
 function inlineTextStyles(
   props: BaseTextAttributes

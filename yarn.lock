@@ -3413,6 +3413,7 @@ __metadata:
   resolution: "@blocksuite/inline@workspace:blocksuite/framework/inline"
   dependencies:
     "@blocksuite/global": "workspace:*"
+    "@blocksuite/store": "workspace:*"
     "@preact/signals-core": "npm:^1.8.0"
     lit: "npm:^3.2.0"
     rxjs: "npm:^7.8.1"
@@ -3490,7 +3491,6 @@ __metadata:
   resolution: "@blocksuite/store@workspace:blocksuite/framework/store"
   dependencies:
     "@blocksuite/global": "workspace:*"
-    "@blocksuite/inline": "workspace:*"
     "@blocksuite/sync": "workspace:*"
     "@preact/signals-core": "npm:^1.8.0"
     "@types/lodash.clonedeep": "npm:^4.5.9"

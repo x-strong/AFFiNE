@@ -1,11 +1,11 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import type { DeltaInsert } from '@blocksuite/store';
 import { html, LitElement, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { INLINE_ROOT_ATTR, ZERO_WIDTH_SPACE } from '../consts.js';
 import type { InlineRootElement } from '../inline-editor.js';
-import type { DeltaInsert } from '../types.js';
 import { EmbedGap } from './embed-gap.js';
 
 export class VLine extends LitElement {

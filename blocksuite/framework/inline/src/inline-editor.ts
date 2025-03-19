@@ -1,5 +1,6 @@
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/store';
 import { type Signal, signal } from '@preact/signals-core';
 import { nothing, render, type TemplateResult } from 'lit';
 import { Subject } from 'rxjs';
@@ -16,12 +17,8 @@ import {
 } from './services/index.js';
 import { RenderService } from './services/render.js';
 import { InlineTextService } from './services/text.js';
-import type { DeltaInsert, InlineRange } from './types.js';
-import {
-  type BaseTextAttributes,
-  nativePointToTextPoint,
-  textPointToDomPoint,
-} from './utils/index.js';
+import type { InlineRange } from './types.js';
+import { nativePointToTextPoint, textPointToDomPoint } from './utils/index.js';
 import { getTextNodesFromElement } from './utils/text.js';
 
 export type InlineRootElement<

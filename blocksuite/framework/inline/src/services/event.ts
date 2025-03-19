@@ -1,7 +1,8 @@
+import type { BaseTextAttributes } from '@blocksuite/store';
+
 import type { InlineEditor } from '../inline-editor.js';
 import type { InlineRange } from '../types.js';
 import {
-  type BaseTextAttributes,
   isInEmbedElement,
   isInEmbedGap,
   isInEmptyLine,
@@ -115,7 +116,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
       ctx.data,
       ctx.attributes,
       ctx.inlineRange,
-      this.editor as InlineEditor
+      this.editor as never
     );
 
     this.editor.slots.inputting.next();

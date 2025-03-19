@@ -1,6 +1,7 @@
+import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/store';
+
 import type { InlineEditor } from '../inline-editor.js';
-import type { DeltaEntry, DeltaInsert, InlineRange } from '../types.js';
-import type { BaseTextAttributes } from '../utils/index.js';
+import type { DeltaEntry, InlineRange } from '../types.js';
 import { transformDeltasToEmbedDeltas } from '../utils/index.js';
 
 export class DeltaService<TextAttributes extends BaseTextAttributes> {

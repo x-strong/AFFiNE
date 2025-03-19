@@ -1,14 +1,7 @@
+import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 
 import type { InlineEditor } from './inline-editor.js';
-import type { BaseTextAttributes } from './utils/index.js';
-
-export type DeltaInsert<
-  TextAttributes extends BaseTextAttributes = BaseTextAttributes,
-> = {
-  insert: string;
-  attributes?: TextAttributes;
-};
 
 export type AttributeRenderer<
   TextAttributes extends BaseTextAttributes = BaseTextAttributes,

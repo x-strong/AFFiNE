@@ -1,10 +1,10 @@
+import type { BaseTextAttributes } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 import * as Y from 'yjs';
 
 import type { VLine } from '../components/v-line.js';
 import type { InlineEditor } from '../inline-editor.js';
 import type { InlineRange, TextPoint } from '../types.js';
-import type { BaseTextAttributes } from '../utils/base-attributes.js';
 import { isInEmbedGap } from '../utils/embed.js';
 import { isMaybeInlineRangeEqual } from '../utils/inline-range.js';
 import {

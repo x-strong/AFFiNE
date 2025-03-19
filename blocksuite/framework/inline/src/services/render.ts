@@ -1,4 +1,5 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import type { BaseTextAttributes } from '@blocksuite/store';
 import { html, render } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import * as Y from 'yjs';
@@ -6,7 +7,6 @@ import * as Y from 'yjs';
 import type { VLine } from '../components/v-line.js';
 import type { InlineEditor } from '../inline-editor.js';
 import type { InlineRange } from '../types.js';
-import type { BaseTextAttributes } from '../utils/base-attributes.js';
 import { deltaInsertsToChunks } from '../utils/delta-convert.js';
 
 export class RenderService<TextAttributes extends BaseTextAttributes> {

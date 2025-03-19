@@ -8,11 +8,11 @@ import {
 } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import {
-  type DeltaInsert,
   type InlineEditor,
   ZERO_WIDTH_NON_JOINER,
   ZERO_WIDTH_SPACE,
 } from '@blocksuite/inline';
+import type { DeltaInsert } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
 import katex from 'katex';
 import { css, html, render } from 'lit';

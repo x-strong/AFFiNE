@@ -1,6 +1,7 @@
+import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/store';
+
 import type { InlineEditor } from '../inline-editor.js';
-import type { DeltaInsert, InlineRange } from '../types.js';
-import type { BaseTextAttributes } from '../utils/base-attributes.js';
+import type { InlineRange } from '../types.js';
 import { intersectInlineRange } from '../utils/inline-range.js';
 
 export class InlineTextService<TextAttributes extends BaseTextAttributes> {

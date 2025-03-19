@@ -607,14 +607,16 @@ export const PackageList = [
   {
     location: 'blocksuite/framework/inline',
     name: '@blocksuite/inline',
-    workspaceDependencies: ['blocksuite/framework/global'],
+    workspaceDependencies: [
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
   },
   {
     location: 'blocksuite/framework/store',
     name: '@blocksuite/store',
     workspaceDependencies: [
       'blocksuite/framework/global',
-      'blocksuite/framework/inline',
       'blocksuite/framework/sync',
     ],
   },

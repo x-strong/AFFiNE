@@ -1,5 +1,4 @@
 export * from './attribute-renderer.js';
-export * from './base-attributes.js';
 export * from './delta-convert.js';
 export * from './embed.js';
 export * from './guard.js';

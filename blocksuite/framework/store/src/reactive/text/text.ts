@@ -1,19 +1,8 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import type { DeltaInsert } from '@blocksuite/inline';
 import { type Signal, signal } from '@preact/signals-core';
 import * as Y from 'yjs';
 
-export interface OptionalAttributes {
-  attributes?: Record<string, any>;
-}
-
-export type DeltaOperation = {
-  insert?: string;
-  delete?: number;
-  retain?: number;
-} & OptionalAttributes;
-
-export type OnTextChange = (data: Y.Text, isLocal: boolean) => void;
+import type { DeltaInsert, DeltaOperation, OnTextChange } from './types';
 
 /**
  * Text is an abstraction of Y.Text.

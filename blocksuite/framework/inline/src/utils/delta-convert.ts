@@ -1,5 +1,4 @@
-import type { DeltaInsert } from '../types.js';
-import type { BaseTextAttributes } from './base-attributes.js';
+import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/store';
 
 export function transformDelta<TextAttributes extends BaseTextAttributes>(
   delta: DeltaInsert<TextAttributes>
