@@ -850,6 +850,19 @@ export const getUserFeaturesQuery = {
 }`,
 };
 
+export const getUserSettingsQuery = {
+  id: 'getUserSettingsQuery' as const,
+  op: 'getUserSettings',
+  query: `query getUserSettings {
+  currentUser {
+    settings {
+      receiveInvitationEmail
+      receiveMentionEmail
+    }
+  }
+}`,
+};
+
 export const getUserQuery = {
   id: 'getUserQuery' as const,
   op: 'getUser',
@@ -1433,6 +1446,14 @@ export const updateUserProfileMutation = {
     id
     name
   }
+}`,
+};
+
+export const updateUserSettingsMutation = {
+  id: 'updateUserSettingsMutation' as const,
+  op: 'updateUserSettings',
+  query: `mutation updateUserSettings($input: UpdateSettingsInput!) {
+  updateSettings(input: $input)
 }`,
 };
 

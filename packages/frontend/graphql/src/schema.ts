@@ -3213,6 +3213,20 @@ export type GetUserFeaturesQuery = {
   } | null;
 };
 
+export type GetUserSettingsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetUserSettingsQuery = {
+  __typename?: 'Query';
+  currentUser: {
+    __typename?: 'UserType';
+    settings: {
+      __typename?: 'SettingsType';
+      receiveInvitationEmail: boolean;
+      receiveMentionEmail: boolean;
+    };
+  } | null;
+};
+
 export type GetUserQueryVariables = Exact<{
   email: Scalars['String']['input'];
 }>;
@@ -3839,6 +3853,15 @@ export type UpdateUserProfileMutation = {
   updateProfile: { __typename?: 'UserType'; id: string; name: string };
 };
 
+export type UpdateUserSettingsMutationVariables = Exact<{
+  input: UpdateSettingsInput;
+}>;
+
+export type UpdateUserSettingsMutation = {
+  __typename?: 'Mutation';
+  updateSettings: boolean;
+};
+
 export type UploadAvatarMutationVariables = Exact<{
   avatar: Scalars['Upload']['input'];
 }>;
@@ -4229,6 +4252,11 @@ export type Queries =
       name: 'getUserFeaturesQuery';
       variables: GetUserFeaturesQueryVariables;
       response: GetUserFeaturesQuery;
+    }
+  | {
+      name: 'getUserSettingsQuery';
+      variables: GetUserSettingsQueryVariables;
+      response: GetUserSettingsQuery;
     }
   | {
       name: 'getUserQuery';
@@ -4646,6 +4674,11 @@ export type Mutations =
       name: 'updateUserProfileMutation';
       variables: UpdateUserProfileMutationVariables;
       response: UpdateUserProfileMutation;
+    }
+  | {
+      name: 'updateUserSettingsMutation';
+      variables: UpdateUserSettingsMutationVariables;
+      response: UpdateUserSettingsMutation;
     }
   | {
       name: 'uploadAvatarMutation';
