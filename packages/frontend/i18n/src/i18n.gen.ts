@@ -7748,6 +7748,10 @@ export function useAFFiNEI18N(): {
       */
     ["error.COPILOT_EMBEDDING_UNAVAILABLE"](): string;
     /**
+      * `Transcription job already exists`
+      */
+    ["error.COPILOT_TRANSCRIPTION_JOB_EXISTS"](): string;
+    /**
       * `You have exceeded your blob size quota.`
       */
     ["error.BLOB_QUOTA_EXCEEDED"](): string;

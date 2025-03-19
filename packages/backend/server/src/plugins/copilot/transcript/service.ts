@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AiJobStatus } from '@prisma/client';
+import { AiJobStatus, AiJobType } from '@prisma/client';
 
 import {
   CopilotPromptNotFound,
@@ -10,7 +10,6 @@ import {
   OnJob,
 } from '../../../base';
 import { Models } from '../../../models';
-import { CopilotJobType } from '../../../models/common/copilot';
 import { PromptService } from '../prompt';
 import { CopilotProviderService } from '../providers';
 import { CopilotStorage } from '../storage';
@@ -48,13 +47,7 @@ export class CopilotTranscriptionService {
     blobId: string,
     blob: FileUpload
   ): Promise<TranscriptionJob> {
-    if (
-      await this.models.copilotJob.has(
-        workspaceId,
-        blobId,
-        CopilotJobType.Transcription
-      )
-    ) {
+    if (await this.models.copilotJob.has(workspaceId, blobId)) {
       throw new CopilotTranscriptionJobExists();
     }
 
@@ -62,7 +55,7 @@ export class CopilotTranscriptionService {
       workspaceId,
       blobId,
       createdBy: userId,
-      type: CopilotJobType.Transcription,
+      type: AiJobType.transcription,
     });
 
     const buffer = await readStream(blob.createReadStream());
@@ -110,7 +103,7 @@ export class CopilotTranscriptionService {
       userId,
       workspaceId,
       jobId,
-      CopilotJobType.Transcription
+      AiJobType.transcription
     );
 
     if (!job) {
