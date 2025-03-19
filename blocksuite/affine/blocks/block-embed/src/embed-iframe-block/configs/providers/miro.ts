@@ -35,7 +35,7 @@ const miroConfig = {
     heightInSurface: MIRO_DEFAULT_HEIGHT_IN_SURFACE,
     heightInNote: MIRO_DEFAULT_HEIGHT_IN_NOTE,
     widthPercent: MIRO_DEFAULT_WIDTH_PERCENT,
-    allow: 'fullscreen; clipboard-read; clipboard-write',
+    allow: 'clipboard-read; clipboard-write',
     style: 'border: 0; border-radius: 8px;',
     allowFullscreen: true,
   },
