@@ -5977,6 +5977,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.share-menu.option.permission.can-read"](): string;
     /**
+      * `No access`
+      */
+    ["com.affine.share-menu.option.permission.no-access"](): string;
+    /**
       * `Members in workspace`
       */
     ["com.affine.share-menu.option.permission.label"](): string;
