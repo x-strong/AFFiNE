@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { ShareableContent } from '@affine/native';
-import { app, nativeImage, Notification } from 'electron';
+import { app } from 'electron';
 import fs from 'fs-extra';
 import { debounce } from 'lodash-es';
 import { BehaviorSubject, distinctUntilChanged, groupBy, mergeMap } from 'rxjs';
@@ -11,6 +11,7 @@ import { beforeAppQuit } from '../cleanup';
 import { logger } from '../logger';
 import type { NamespaceHandlers } from '../type';
 import { getMainWindow } from '../windows-manager';
+import { popupManager } from '../windows-manager/popup';
 import type {
   AppGroupInfo,
   Recording,
@@ -116,25 +117,24 @@ function setupNewRunningAppGroup() {
   subscribers.push(
     appGroupRunningChanged$.subscribe(currentGroup => {
       if (currentGroup.isRunning) {
-        // TODO(@pengx17): stub impl. will be replaced with a real one later
-        const notification = new Notification({
-          icon: currentGroup.icon
-            ? nativeImage.createFromBuffer(currentGroup.icon)
-            : undefined,
-          title: 'Recording Meeting',
-          body: `Recording meeting with ${currentGroup.name}`,
-          actions: [
-            {
-              type: 'button',
-              text: 'Start',
-            },
-          ],
-        });
-        notification.on('action', () => {
-          startRecording(currentGroup);
-        });
-        notification.show();
+        const popupWindow = popupManager.get('notification');
+        popupWindow
+          .notify({
+            type: 'meeting',
+            icon: currentGroup.icon,
+            appName: currentGroup.name,
+            processGroupId: currentGroup.processGroupId,
+          })
+          .catch(err => {
+            logger.error('failed to show notification popup', err);
+          });
       } else {
+        popupManager
+          .get('notification')
+          .hide()
+          .catch(err => {
+            logger.error('failed to hide notification popup', err);
+          });
         // if the group is not running, we should stop the recording (if it is recording)
         if (
           recordingStatus$.value?.status === 'recording' &&
@@ -342,10 +342,16 @@ export function setupRecording() {
 let recordingId = 0;
 
 export function startRecording(
-  appGroup?: AppGroupInfo
+  appGroup?: AppGroupInfo | number
 ): RecordingStatus | undefined {
   if (!shareableContent) {
     return; // likely called on unsupported platform
+  }
+
+  if (typeof appGroup === 'number') {
+    appGroup = appGroups$.value.find(
+      group => group.processGroupId === appGroup
+    );
   }
 
   // hmm, is it possible that there are multiple apps running (listening) in the same group?
