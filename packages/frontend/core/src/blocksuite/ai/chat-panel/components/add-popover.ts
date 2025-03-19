@@ -1,5 +1,8 @@
 import { toast } from '@affine/component';
-import type { TagMeta } from '@affine/core/components/page-list';
+import type {
+  CollectionMeta,
+  TagMeta,
+} from '@affine/core/components/page-list';
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
@@ -314,6 +317,13 @@ export class ChatPanelAddPopover extends SignalWatcher(
           this.abortController.signal
         );
         break;
+      case AddPopoverMode.Collections:
+        this._searchGroup = this.searchMenuConfig.getCollectionMenuGroup(
+          this._query,
+          this._addCollectionChip,
+          this.abortController.signal
+        );
+        break;
       default:
         this._searchGroup = this.searchMenuConfig.getDocMenuGroup(
           this._query,
@@ -332,6 +342,10 @@ export class ChatPanelAddPopover extends SignalWatcher(
   };
 
   private readonly _addTagChip = (_tag: TagMeta) => {
+    this.abortController.abort();
+  };
+
+  private readonly _addCollectionChip = (_collection: CollectionMeta) => {
     this.abortController.abort();
   };
 

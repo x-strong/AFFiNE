@@ -6834,6 +6834,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.tags"](): string;
     /**
+      * `Collections`
+      */
+    ["com.affine.editor.at-menu.collections"](): string;
+    /**
       * `Loading...`
       */
     ["com.affine.editor.at-menu.loading"](): string;

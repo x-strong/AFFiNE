@@ -1698,6 +1698,7 @@
   "com.affine.editor.at-menu.link-to-doc": "Search for \"{{query}}\"",
   "com.affine.editor.at-menu.recent-docs": "Recent",
   "com.affine.editor.at-menu.tags": "Tags",
+  "com.affine.editor.at-menu.collections": "Collections",
   "com.affine.editor.at-menu.loading": "Loading...",
   "com.affine.editor.at-menu.new-doc": "New",
   "com.affine.editor.at-menu.create-page": "New \"{{name}}\" page",
