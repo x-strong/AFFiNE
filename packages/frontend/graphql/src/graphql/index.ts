@@ -349,20 +349,28 @@ export const getCopilotHistoriesQuery = {
 }`,
 };
 
-export const submitTranscriptionJobMutation = {
-  id: 'submitTranscriptionJobMutation' as const,
-  op: 'submitTranscriptionJob',
-  query: `mutation submitTranscriptionJob($workspaceId: String!, $blobId: String!, $blob: Upload!) {
-  submitTranscriptionJob(blob: $blob, blobId: $blobId, workspaceId: $workspaceId)
+export const submitAudioTranscriptionMutation = {
+  id: 'submitAudioTranscriptionMutation' as const,
+  op: 'submitAudioTranscription',
+  query: `mutation submitAudioTranscription($workspaceId: String!, $blobId: String!, $blob: Upload!) {
+  submitAudioTranscription(
+    blob: $blob
+    blobId: $blobId
+    workspaceId: $workspaceId
+  ) {
+    id
+    status
+  }
 }`,
   file: true,
 };
 
-export const claimTranscriptionResultMutation = {
-  id: 'claimTranscriptionResultMutation' as const,
-  op: 'claimTranscriptionResult',
-  query: `mutation claimTranscriptionResult($jobId: String!) {
-  claimTranscriptionResult(jobId: $jobId) {
+export const claimAudioTranscriptionMutation = {
+  id: 'claimAudioTranscriptionMutation' as const,
+  op: 'claimAudioTranscription',
+  query: `mutation claimAudioTranscription($jobId: String!) {
+  claimAudioTranscription(jobId: $jobId) {
+    id
     status
     transcription {
       speaker
@@ -375,18 +383,22 @@ export const claimTranscriptionResultMutation = {
 }`,
 };
 
-export const getTranscriptionJobsQuery = {
-  id: 'getTranscriptionJobsQuery' as const,
-  op: 'getTranscriptionJobs',
-  query: `query getTranscriptionJobs($workspaceId: String!) {
+export const getAudioTranscriptionQuery = {
+  id: 'getAudioTranscriptionQuery' as const,
+  op: 'getAudioTranscription',
+  query: `query getAudioTranscription($workspaceId: String!, $jobId: String!) {
   currentUser {
     copilot(workspaceId: $workspaceId) {
-      transcriptionsJobs {
+      audioTranscription(jobId: $jobId) {
         id
-        workspaceId
-        blobId
-        createdBy
         status
+        transcription {
+          speaker
+          start
+          end
+          transcription
+        }
+        summary
       }
     }
   }

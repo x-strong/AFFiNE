@@ -20,11 +20,17 @@ import {
   PromptMessage,
 } from '../types';
 import {
-  TranscriptConfigSchema,
-  TranscriptionConfig,
+  TranscriptionPayload,
   TranscriptionSchema,
+  TranscriptPayloadSchema,
 } from './types';
 import { readStream } from './utils';
+
+export type TranscriptionJob = {
+  id: string;
+  status: AiJobStatus;
+  transcription?: TranscriptionPayload;
+};
 
 @Injectable()
 export class CopilotTranscriptionService {
@@ -41,7 +47,7 @@ export class CopilotTranscriptionService {
     workspaceId: string,
     blobId: string,
     blob: FileUpload
-  ): Promise<string> {
+  ): Promise<TranscriptionJob> {
     if (
       await this.models.copilotJob.has(
         workspaceId,
@@ -52,7 +58,7 @@ export class CopilotTranscriptionService {
       throw new CopilotTranscriptionJobExists();
     }
 
-    const { id: jobId } = await this.models.copilotJob.create({
+    const { id: jobId, status } = await this.models.copilotJob.create({
       workspaceId,
       blobId,
       createdBy: userId,
@@ -77,33 +83,48 @@ export class CopilotTranscriptionService {
       { removeOnFail: 3 }
     );
 
-    return jobId;
+    return { id: jobId, status };
   }
 
-  async claimTranscriptionResult(
+  async claimTranscriptionJob(
     userId: string,
     jobId: string
-  ): Promise<{
-    transcription?: TranscriptionConfig;
-    status?: AiJobStatus;
-  } | null> {
+  ): Promise<TranscriptionJob | null> {
     const status = await this.models.copilotJob.claim(jobId, userId);
     if (status === AiJobStatus.claimed) {
       const transcription = await this.models.copilotJob.getPayload(
         jobId,
-        TranscriptConfigSchema
+        TranscriptPayloadSchema
       );
-      return { transcription, status };
+      return { id: jobId, transcription, status };
     }
-    return { status };
+    return null;
   }
 
-  async queryTranscriptionJobs(userId: string, workspaceId: string) {
-    return this.models.copilotJob.list(
+  async queryTranscriptionJob(
+    userId: string,
+    workspaceId: string,
+    jobId: string
+  ) {
+    const job = await this.models.copilotJob.getWithUser(
       userId,
       workspaceId,
+      jobId,
       CopilotJobType.Transcription
     );
+
+    if (!job) {
+      return null;
+    }
+
+    const ret: TranscriptionJob = { id: job.id, status: job.status };
+
+    const payload = TranscriptPayloadSchema.safeParse(job.payload);
+    if (payload.success) {
+      ret.transcription = payload.data;
+    }
+
+    return ret;
   }
 
   private async getProvider(model: string): Promise<CopilotTextProvider> {
@@ -172,7 +193,7 @@ export class CopilotTranscriptionService {
   async summaryTranscription({ jobId }: Jobs['copilot.summary.submit']) {
     const payload = await this.models.copilotJob.getPayload(
       jobId,
-      TranscriptConfigSchema
+      TranscriptPayloadSchema
     );
     if (payload.transcription) {
       const content = payload.transcription

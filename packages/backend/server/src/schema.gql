@@ -19,7 +19,7 @@ input AddRemoveContextCategoryInput {
 }
 
 enum AiJobStatus {
-  claim
+  claimed
   failed
   finished
   pending
@@ -80,6 +80,8 @@ type ContextWorkspaceEmbeddingStatus {
 }
 
 type Copilot {
+  audioTranscription(jobId: String): [TranscriptionResultType!]!
+
   """Get the context list of a session"""
   contexts(contextId: String, sessionId: String): [CopilotContext!]!
   histories(docId: String, options: QueryChatHistoriesInput): [CopilotHistories!]!
@@ -92,7 +94,6 @@ type Copilot {
 
   """Get the session list in the workspace"""
   sessions(docId: String, options: QueryChatSessionsInput): [CopilotSessionType!]!
-  transcriptionsJobs: [TranscriptionsJob!]!
   workspaceId: ID
 }
 
@@ -852,7 +853,7 @@ type Mutation {
   cancelSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   changeEmail(email: String!, token: String!): UserType!
   changePassword(newPassword: String!, token: String!, userId: String): Boolean!
-  claimTranscriptionResult(jobId: String!): TranscriptionResultType!
+  claimAudioTranscription(jobId: String!): TranscriptionResultType
 
   """Cleanup sessions"""
   cleanupCopilotSession(options: DeleteSessionInput!): [String!]!
@@ -945,7 +946,7 @@ type Mutation {
   sendVerifyChangeEmail(callbackUrl: String!, email: String!, token: String!): Boolean!
   sendVerifyEmail(callbackUrl: String!): Boolean!
   setBlob(blob: Upload!, workspaceId: String!): String!
-  submitTranscriptionJob(blob: Upload!, blobId: String!, workspaceId: String!): String!
+  submitAudioTranscription(blob: Upload!, blobId: String!, workspaceId: String!): TranscriptionResultType
 
   """Update a copilot prompt"""
   updateCopilotPrompt(messages: [CopilotPromptMessageInput!]!, name: String!): CopilotPromptType!
@@ -1406,17 +1407,10 @@ type TranscriptionItemType {
 }
 
 type TranscriptionResultType {
-  status: AiJobStatus
+  id: ID!
+  status: AiJobStatus!
   summary: String
   transcription: [TranscriptionItemType!]
-}
-
-type TranscriptionsJob {
-  blobId: String!
-  createdBy: String
-  id: String!
-  status: String!
-  workspaceId: String!
 }
 
 union UnionNotificationBodyType = InvitationAcceptedNotificationBodyType | InvitationBlockedNotificationBodyType | InvitationNotificationBodyType | MentionNotificationBodyType

@@ -54,7 +54,7 @@ export interface AddRemoveContextCategoryInput {
 }
 
 export enum AiJobStatus {
-  claim = 'claim',
+  claimed = 'claimed',
   failed = 'failed',
   finished = 'finished',
   pending = 'pending',
@@ -122,6 +122,7 @@ export interface ContextWorkspaceEmbeddingStatus {
 
 export interface Copilot {
   __typename?: 'Copilot';
+  audioTranscription: Array<TranscriptionResultType>;
   /** Get the context list of a session */
   contexts: Array<CopilotContext>;
   histories: Array<CopilotHistories>;
@@ -134,8 +135,11 @@ export interface Copilot {
   sessionIds: Array<Scalars['String']['output']>;
   /** Get the session list in the workspace */
   sessions: Array<CopilotSessionType>;
-  transcriptionsJobs: Array<TranscriptionsJob>;
   workspaceId: Maybe<Scalars['ID']['output']>;
+}
+
+export interface CopilotAudioTranscriptionArgs {
+  jobId?: InputMaybe<Scalars['String']['input']>;
 }
 
 export interface CopilotContextsArgs {
@@ -987,7 +991,7 @@ export interface Mutation {
   cancelSubscription: SubscriptionType;
   changeEmail: UserType;
   changePassword: Scalars['Boolean']['output'];
-  claimTranscriptionResult: TranscriptionResultType;
+  claimAudioTranscription: Maybe<TranscriptionResultType>;
   /** Cleanup sessions */
   cleanupCopilotSession: Array<Scalars['String']['output']>;
   /** Create change password url */
@@ -1061,7 +1065,7 @@ export interface Mutation {
   sendVerifyChangeEmail: Scalars['Boolean']['output'];
   sendVerifyEmail: Scalars['Boolean']['output'];
   setBlob: Scalars['String']['output'];
-  submitTranscriptionJob: Scalars['String']['output'];
+  submitAudioTranscription: Maybe<TranscriptionResultType>;
   /** Update a copilot prompt */
   updateCopilotPrompt: CopilotPromptType;
   /** Update a chat session */
@@ -1142,7 +1146,7 @@ export interface MutationChangePasswordArgs {
   userId?: InputMaybe<Scalars['String']['input']>;
 }
 
-export interface MutationClaimTranscriptionResultArgs {
+export interface MutationClaimAudioTranscriptionArgs {
   jobId: Scalars['String']['input'];
 }
 
@@ -1368,7 +1372,7 @@ export interface MutationSetBlobArgs {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface MutationSubmitTranscriptionJobArgs {
+export interface MutationSubmitAudioTranscriptionArgs {
   blob: Scalars['Upload']['input'];
   blobId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -1910,18 +1914,10 @@ export interface TranscriptionItemType {
 
 export interface TranscriptionResultType {
   __typename?: 'TranscriptionResultType';
-  status: Maybe<AiJobStatus>;
+  id: Scalars['ID']['output'];
+  status: AiJobStatus;
   summary: Maybe<Scalars['String']['output']>;
   transcription: Maybe<Array<TranscriptionItemType>>;
-}
-
-export interface TranscriptionsJob {
-  __typename?: 'TranscriptionsJob';
-  blobId: Scalars['String']['output'];
-  createdBy: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  workspaceId: Scalars['String']['output'];
 }
 
 export type UnionNotificationBodyType =
@@ -2697,26 +2693,31 @@ export type GetCopilotHistoriesQuery = {
   } | null;
 };
 
-export type SubmitTranscriptionJobMutationVariables = Exact<{
+export type SubmitAudioTranscriptionMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   blobId: Scalars['String']['input'];
   blob: Scalars['Upload']['input'];
 }>;
 
-export type SubmitTranscriptionJobMutation = {
+export type SubmitAudioTranscriptionMutation = {
   __typename?: 'Mutation';
-  submitTranscriptionJob: string;
+  submitAudioTranscription: {
+    __typename?: 'TranscriptionResultType';
+    id: string;
+    status: AiJobStatus;
+  } | null;
 };
 
-export type ClaimTranscriptionResultMutationVariables = Exact<{
+export type ClaimAudioTranscriptionMutationVariables = Exact<{
   jobId: Scalars['String']['input'];
 }>;
 
-export type ClaimTranscriptionResultMutation = {
+export type ClaimAudioTranscriptionMutation = {
   __typename?: 'Mutation';
-  claimTranscriptionResult: {
+  claimAudioTranscription: {
     __typename?: 'TranscriptionResultType';
-    status: AiJobStatus | null;
+    id: string;
+    status: AiJobStatus;
     summary: string | null;
     transcription: Array<{
       __typename?: 'TranscriptionItemType';
@@ -2725,26 +2726,32 @@ export type ClaimTranscriptionResultMutation = {
       end: string;
       transcription: string;
     }> | null;
-  };
+  } | null;
 };
 
-export type GetTranscriptionJobsQueryVariables = Exact<{
+export type GetAudioTranscriptionQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
+  jobId: Scalars['String']['input'];
 }>;
 
-export type GetTranscriptionJobsQuery = {
+export type GetAudioTranscriptionQuery = {
   __typename?: 'Query';
   currentUser: {
     __typename?: 'UserType';
     copilot: {
       __typename?: 'Copilot';
-      transcriptionsJobs: Array<{
-        __typename?: 'TranscriptionsJob';
+      audioTranscription: Array<{
+        __typename?: 'TranscriptionResultType';
         id: string;
-        workspaceId: string;
-        blobId: string;
-        createdBy: string | null;
-        status: string;
+        status: AiJobStatus;
+        summary: string | null;
+        transcription: Array<{
+          __typename?: 'TranscriptionItemType';
+          speaker: string;
+          start: string;
+          end: string;
+          transcription: string;
+        }> | null;
       }>;
     };
   } | null;
@@ -4230,9 +4237,9 @@ export type Queries =
       response: GetCopilotHistoriesQuery;
     }
   | {
-      name: 'getTranscriptionJobsQuery';
-      variables: GetTranscriptionJobsQueryVariables;
-      response: GetTranscriptionJobsQuery;
+      name: 'getAudioTranscriptionQuery';
+      variables: GetAudioTranscriptionQueryVariables;
+      response: GetAudioTranscriptionQuery;
     }
   | {
       name: 'getPromptsQuery';
@@ -4537,14 +4544,14 @@ export type Mutations =
       response: QueueWorkspaceEmbeddingMutation;
     }
   | {
-      name: 'submitTranscriptionJobMutation';
-      variables: SubmitTranscriptionJobMutationVariables;
-      response: SubmitTranscriptionJobMutation;
+      name: 'submitAudioTranscriptionMutation';
+      variables: SubmitAudioTranscriptionMutationVariables;
+      response: SubmitAudioTranscriptionMutation;
     }
   | {
-      name: 'claimTranscriptionResultMutation';
-      variables: ClaimTranscriptionResultMutationVariables;
-      response: ClaimTranscriptionResultMutation;
+      name: 'claimAudioTranscriptionMutation';
+      variables: ClaimAudioTranscriptionMutationVariables;
+      response: ClaimAudioTranscriptionMutation;
     }
   | {
       name: 'createCopilotMessageMutation';

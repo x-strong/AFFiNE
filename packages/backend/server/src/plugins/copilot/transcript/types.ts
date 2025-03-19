@@ -11,14 +11,14 @@ const TranscriptionItemSchema = z.object({
 
 export const TranscriptionSchema = z.array(TranscriptionItemSchema);
 
-export const TranscriptConfigSchema = z.object({
+export const TranscriptPayloadSchema = z.object({
   transcription: TranscriptionSchema.nullable().optional(),
   summary: z.string().nullable().optional(),
 });
 
 export type TranscriptionItem = z.infer<typeof TranscriptionItemSchema>;
 export type Transcription = z.infer<typeof TranscriptionSchema>;
-export type TranscriptionConfig = z.infer<typeof TranscriptConfigSchema>;
+export type TranscriptionPayload = z.infer<typeof TranscriptPayloadSchema>;
 
 declare global {
   interface Jobs {

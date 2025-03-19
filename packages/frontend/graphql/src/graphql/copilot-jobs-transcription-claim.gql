@@ -1,5 +1,6 @@
-mutation claimTranscriptionResult($jobId: String!) {
-  claimTranscriptionResult(jobId: $jobId) {
+mutation claimAudioTranscription($jobId: String!) {
+  claimAudioTranscription(jobId: $jobId) {
+    id
     status
     transcription {
       speaker

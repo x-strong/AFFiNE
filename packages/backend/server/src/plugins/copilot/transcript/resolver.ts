@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   Args,
   Field,
+  ID,
   Mutation,
   ObjectType,
   Parent,
@@ -16,8 +17,8 @@ import type { FileUpload } from '../../../base';
 import { CurrentUser } from '../../../core/auth';
 import { AccessController } from '../../../core/permission';
 import { CopilotType } from '../resolver';
-import { CopilotTranscriptionService } from './service';
-import type { TranscriptionConfig, TranscriptionItem } from './types';
+import { CopilotTranscriptionService, TranscriptionJob } from './service';
+import type { TranscriptionItem, TranscriptionPayload } from './types';
 
 registerEnumType(AiJobStatus, {
   name: 'AiJobStatus',
@@ -39,33 +40,18 @@ class TranscriptionItemType implements TranscriptionItem {
 }
 
 @ObjectType()
-class TranscriptionResultType implements TranscriptionConfig {
+class TranscriptionResultType implements TranscriptionPayload {
+  @Field(() => ID)
+  id!: string;
+
   @Field(() => [TranscriptionItemType], { nullable: true })
   transcription!: TranscriptionItemType[] | null;
 
   @Field(() => String, { nullable: true })
   summary!: string | null;
 
-  @Field(() => AiJobStatus, { nullable: true })
-  status!: AiJobStatus | null;
-}
-
-@ObjectType()
-class TranscriptionsJob {
-  @Field(() => String)
-  id!: string;
-
-  @Field(() => String)
-  status!: string;
-
-  @Field(() => String)
-  workspaceId!: string;
-
-  @Field(() => String)
-  blobId!: string;
-
-  @Field(() => String, { nullable: true })
-  createdBy!: string | null;
+  @Field(() => AiJobStatus)
+  status!: AiJobStatus;
 }
 
 @Injectable()
@@ -76,53 +62,73 @@ export class CopilotTranscriptionResolver {
     private readonly service: CopilotTranscriptionService
   ) {}
 
-  @Mutation(() => String)
-  async submitTranscriptionJob(
+  private handleJobResult(
+    job: TranscriptionJob | null
+  ): TranscriptionResultType | null {
+    if (job) {
+      const { transcription: ret, status } = job;
+      return {
+        id: job.id,
+        transcription: ret?.transcription || null,
+        summary: ret?.summary || null,
+        status,
+      };
+    }
+    return null;
+  }
+
+  @Mutation(() => TranscriptionResultType, { nullable: true })
+  async submitAudioTranscription(
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('blobId') blobId: string,
     @Args({ name: 'blob', type: () => GraphQLUpload })
     blob: FileUpload
-  ): Promise<string> {
-    const jobId = await this.service.submitTranscriptionJob(
+  ): Promise<TranscriptionResultType | null> {
+    await this.ac
+      .user(user.id)
+      .workspace(workspaceId)
+      .allowLocal()
+      .assert('Workspace.Copilot');
+
+    const job = await this.service.submitTranscriptionJob(
       user.id,
       workspaceId,
       blobId,
       blob
     );
 
-    return jobId;
+    return this.handleJobResult(job);
   }
 
-  @Mutation(() => TranscriptionResultType)
-  async claimTranscriptionResult(
+  @Mutation(() => TranscriptionResultType, { nullable: true })
+  async claimAudioTranscription(
     @CurrentUser() user: CurrentUser,
     @Args('jobId') jobId: string
   ): Promise<TranscriptionResultType | null> {
-    const result = await this.service.claimTranscriptionResult(user.id, jobId);
-    if (result) {
-      const { transcription: ret, status } = result;
-      return {
-        transcription: ret?.transcription || null,
-        summary: ret?.summary || null,
-        status: status || null,
-      };
-    }
-    return null;
+    const job = await this.service.claimTranscriptionJob(user.id, jobId);
+    return this.handleJobResult(job);
   }
 
-  @ResolveField(() => [TranscriptionsJob], {})
-  async transcriptionsJobs(
+  @ResolveField(() => [TranscriptionResultType], {})
+  async audioTranscription(
     @Parent() copilot: CopilotType,
-    @CurrentUser() user: CurrentUser
-  ): Promise<TranscriptionsJob[]> {
-    if (!copilot.workspaceId) return [];
+    @CurrentUser() user: CurrentUser,
+    @Args('jobId', { nullable: true })
+    jobId: string
+  ): Promise<TranscriptionResultType | null> {
+    if (!copilot.workspaceId) return null;
     await this.ac
       .user(user.id)
       .workspace(copilot.workspaceId)
       .allowLocal()
       .assert('Workspace.Copilot');
 
-    return this.service.queryTranscriptionJobs(user.id, copilot.workspaceId);
+    const job = await this.service.queryTranscriptionJob(
+      user.id,
+      copilot.workspaceId,
+      jobId
+    );
+    return this.handleJobResult(job);
   }
 }

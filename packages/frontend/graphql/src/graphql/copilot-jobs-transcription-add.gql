@@ -1,3 +1,6 @@
-mutation submitTranscriptionJob($workspaceId: String!, $blobId: String!, $blob: Upload!) {
-  submitTranscriptionJob(blob: $blob, blobId: $blobId, workspaceId: $workspaceId)
+mutation submitAudioTranscription($workspaceId: String!, $blobId: String!, $blob: Upload!) {
+  submitAudioTranscription(blob: $blob, blobId: $blobId, workspaceId: $workspaceId) {
+    id
+    status
+  }
 }
