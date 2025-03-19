@@ -29,7 +29,7 @@ import {
   handleNativeRangeAtPoint,
   resetNativeSelection,
 } from '@blocksuite/affine-shared/utils';
-import type { PointerEventState } from '@blocksuite/block-std';
+import type { BlockComponent, PointerEventState } from '@blocksuite/block-std';
 import {
   BaseTool,
   getTopElements,
@@ -41,12 +41,11 @@ import {
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import type { IVec } from '@blocksuite/global/gfx';
 import { Bound, getCommonBoundWithRotation, Vec } from '@blocksuite/global/gfx';
-import { noop } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
 import last from 'lodash-es/last';
 
-import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
+import type { EdgelessRootBlockComponent } from '../index.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
 import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
@@ -191,10 +190,8 @@ export class DefaultTool extends BaseTool {
 
   enableHover = true;
 
-  private get _edgeless(): EdgelessRootBlockComponent | null {
-    const block = this.std.view.getBlock(this.doc.root!.id);
-
-    return (block as EdgelessRootBlockComponent) ?? null;
+  private get _edgeless(): BlockComponent | null {
+    return this.std.view.getBlock(this.doc.root!.id);
   }
 
   /**
@@ -243,7 +240,11 @@ export class DefaultTool extends BaseTool {
   private async _cloneContent() {
     if (!this._edgeless) return;
 
-    const clipboardController = this._edgeless?.clipboardController;
+    // FIXME: edgeless clipboard should be an extension
+    const clipboardController = (
+      this._edgeless as EdgelessRootBlockComponent | null
+    )?.clipboardController;
+    if (!clipboardController) return;
     const snapshot = prepareCloneData(this._toBeMoved, this.std);
 
     const bound = getCommonBoundWithRotation(this._toBeMoved);
@@ -551,7 +552,6 @@ export class DefaultTool extends BaseTool {
     this._stopAutoPanning();
     this._clearDisposable();
     this._accumulateDelta = [0, 0];
-    noop();
   }
 
   override doubleClick(e: PointerEventState) {

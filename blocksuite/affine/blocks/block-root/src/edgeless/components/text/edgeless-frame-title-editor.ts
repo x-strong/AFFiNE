@@ -6,17 +6,17 @@ import {
   frameTitleStyleVars,
 } from '@blocksuite/affine-widget-frame-title';
 import {
+  type BlockComponent,
   RANGE_SYNC_EXCLUDE_ATTR,
   ShadowlessElement,
 } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { WithDisposable } from '@blocksuite/global/lit';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { css, html, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-
-import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 
 export class EdgelessFrameTitleEditor extends WithDisposable(
   ShadowlessElement
@@ -46,10 +46,18 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
     return this.richText?.inlineEditor;
   }
 
+  get gfx() {
+    return this.edgeless.std.get(GfxControllerIdentifier);
+  }
+
+  get selection() {
+    return this.gfx.selection;
+  }
+
   private _unmount() {
     // dispose in advance to avoid execute `this.remove()` twice
     this.disposables.dispose();
-    this.edgeless.service.selection.set({
+    this.selection.set({
       elements: [],
       editing: false,
     });
@@ -62,7 +70,7 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
   }
 
   override firstUpdated(): void {
-    const dispatcher = this.edgeless.dispatcher;
+    const dispatcher = this.edgeless.std.event;
     this.updateComplete
       .then(() => {
         if (!this.inlineEditor) return;
@@ -87,7 +95,7 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
           })
         );
         this.disposables.add(
-          this.edgeless.service.viewport.viewportUpdated.subscribe(() => {
+          this.gfx.viewport.viewportUpdated.subscribe(() => {
             this.requestUpdate();
           })
         );
@@ -117,10 +125,10 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
     const rootBlockId = this.editorHost.doc.root?.id;
     if (!rootBlockId) return nothing;
 
-    const viewport = this.edgeless.service.viewport;
+    const viewport = this.gfx.viewport;
     const bound = Bound.deserialize(this.frameModel.xywh);
     const [x, y] = viewport.toViewCoord(bound.x, bound.y);
-    const isInner = this.edgeless.service.gfx.grid.has(
+    const isInner = this.gfx.grid.has(
       this.frameModel.elementBound,
       true,
       true,
@@ -167,7 +175,7 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
   }
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   @property({ attribute: false })
   accessor frameModel!: FrameBlockModel;

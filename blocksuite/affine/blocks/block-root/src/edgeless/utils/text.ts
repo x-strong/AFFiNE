@@ -5,6 +5,8 @@ import type {
   GroupElementModel,
 } from '@blocksuite/affine-model';
 import { ShapeElementModel } from '@blocksuite/affine-model';
+import type { BlockComponent } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IVec } from '@blocksuite/global/gfx';
 import { Bound } from '@blocksuite/global/gfx';
@@ -14,28 +16,31 @@ import { EdgelessConnectorLabelEditor } from '../components/text/edgeless-connec
 import { EdgelessFrameTitleEditor } from '../components/text/edgeless-frame-title-editor.js';
 import { EdgelessGroupTitleEditor } from '../components/text/edgeless-group-title-editor.js';
 import { EdgelessShapeTextEditor } from '../components/text/edgeless-shape-text-editor.js';
-import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 
 export function mountShapeTextEditor(
   shapeElement: ShapeElementModel,
-  edgeless: EdgelessRootBlockComponent
+  edgeless: BlockComponent
 ) {
-  if (!edgeless.mountElm) {
+  const mountElm = edgeless.querySelector('.edgeless-mount-point');
+  if (!mountElm) {
     throw new BlockSuiteError(
       ErrorCode.ValueNotExists,
       "edgeless block's mount point does not exist"
     );
   }
 
-  const updatedElement = edgeless.service.crud.getElementById(shapeElement.id);
+  const gfx = edgeless.std.get(GfxControllerIdentifier);
+  const crud = edgeless.std.get(EdgelessCRUDIdentifier);
+
+  const updatedElement = crud.getElementById(shapeElement.id);
 
   if (!(updatedElement instanceof ShapeElementModel)) {
     console.error('Cannot mount text editor on a non-shape element');
     return;
   }
 
-  edgeless.gfx.tool.setTool('default');
-  edgeless.gfx.selection.set({
+  gfx.tool.setTool('default');
+  gfx.selection.set({
     elements: [shapeElement.id],
     editing: true,
   });
@@ -52,22 +57,25 @@ export function mountShapeTextEditor(
   shapeEditor.edgeless = edgeless;
   shapeEditor.mountEditor = mountShapeTextEditor;
 
-  edgeless.mountElm.append(shapeEditor);
+  mountElm.append(shapeEditor);
 }
 
 export function mountFrameTitleEditor(
   frame: FrameBlockModel,
-  edgeless: EdgelessRootBlockComponent
+  edgeless: BlockComponent
 ) {
-  if (!edgeless.mountElm) {
+  const mountElm = edgeless.querySelector('.edgeless-mount-point');
+  if (!mountElm) {
     throw new BlockSuiteError(
       ErrorCode.ValueNotExists,
       "edgeless block's mount point does not exist"
     );
   }
 
-  edgeless.gfx.tool.setTool('default');
-  edgeless.gfx.selection.set({
+  const gfx = edgeless.std.get(GfxControllerIdentifier);
+
+  gfx.tool.setTool('default');
+  gfx.selection.set({
     elements: [frame.id],
     editing: true,
   });
@@ -76,22 +84,25 @@ export function mountFrameTitleEditor(
   frameEditor.frameModel = frame;
   frameEditor.edgeless = edgeless;
 
-  edgeless.mountElm.append(frameEditor);
+  mountElm.append(frameEditor);
 }
 
 export function mountGroupTitleEditor(
   group: GroupElementModel,
-  edgeless: EdgelessRootBlockComponent
+  edgeless: BlockComponent
 ) {
-  if (!edgeless.mountElm) {
+  const mountElm = edgeless.querySelector('.edgeless-mount-point');
+  if (!mountElm) {
     throw new BlockSuiteError(
       ErrorCode.ValueNotExists,
       "edgeless block's mount point does not exist"
     );
   }
 
-  edgeless.gfx.tool.setTool('default');
-  edgeless.gfx.selection.set({
+  const gfx = edgeless.std.get(GfxControllerIdentifier);
+
+  gfx.tool.setTool('default');
+  gfx.selection.set({
     elements: [group.id],
     editing: true,
   });
@@ -100,23 +111,26 @@ export function mountGroupTitleEditor(
   groupEditor.group = group;
   groupEditor.edgeless = edgeless;
 
-  edgeless.mountElm.append(groupEditor);
+  mountElm.append(groupEditor);
 }
 
 export function mountConnectorLabelEditor(
   connector: ConnectorElementModel,
-  edgeless: EdgelessRootBlockComponent,
+  edgeless: BlockComponent,
   point?: IVec
 ) {
-  if (!edgeless.mountElm) {
+  const mountElm = edgeless.querySelector('.edgeless-mount-point');
+  if (!mountElm) {
     throw new BlockSuiteError(
       ErrorCode.ValueNotExists,
       "edgeless block's mount point does not exist"
     );
   }
 
-  edgeless.gfx.tool.setTool('default');
-  edgeless.gfx.selection.set({
+  const gfx = edgeless.std.get(GfxControllerIdentifier);
+
+  gfx.tool.setTool('default');
+  gfx.selection.set({
     elements: [connector.id],
     editing: true,
   });
@@ -146,7 +160,7 @@ export function mountConnectorLabelEditor(
   editor.connector = connector;
   editor.edgeless = edgeless;
 
-  edgeless.mountElm.append(editor);
+  mountElm.append(editor);
   editor.updateComplete
     .then(() => {
       editor.inlineEditor?.focusEnd();
